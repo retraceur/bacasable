@@ -11,7 +11,7 @@ This project is based on `wp-now`, developed by the WP Playground team.
 
 ## Modifications for Retraceur
 
-`retraceur-now` adapts wp-now to work with [Retraceur](https://github.com/retraceur/coeur),
+`bacasable` adapts wp-now to work with [Retraceur](https://github.com/retraceur/coeur),
 a fork of WordPress focused on personal publishing.
 
 ### Main changes:
@@ -32,4 +32,4 @@ Without their WebAssembly PHP infrastructure, this project would not be possible
 
 ## License
 
-Like the parent project, `retraceur-now` is distributed under the GPL-2.0-or-later license.
+Like the parent project, `bacasable` is distributed under the GPL-2.0-or-later license.
