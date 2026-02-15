@@ -22,11 +22,7 @@
 	},
 	"main": "./build/main.js",
 	"scripts": {
-		"build": "node esbuild.mjs",
-		"dev": "tsc --watch",
-		"test": "vitest",
-		"lint": "eslint src",
-		"format": "prettier --write src"
+		"build": "node esbuild.mjs"
 	},
 	"dependencies": {
 		"@php-wasm/node": "latest",
@@ -52,8 +48,7 @@
 		"@typescript-eslint/parser": "^6.0.0",
 		"eslint": "^8.0.0",
 		"prettier": "^3.0.0",
-		"typescript": "^5.0.0",
-		"vitest": "^1.0.0"
+		"typescript": "^5.0.0"
 	},
 	"engines": {
 		"node": ">=20.0.0"

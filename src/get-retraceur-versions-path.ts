@@ -6,7 +6,7 @@
  */
 
 import path from 'path';
-import getWpNowPath from './get-wp-now-path';
+import getBacAsablePath from './get-bacasable-path';
 
 /**
  * The path where Retraceur zip files will be unzipped and stored within the bacÀsable folder.
@@ -15,5 +15,5 @@ import getWpNowPath from './get-wp-now-path';
  * @returns {string} The path to the Retraceur versions directory.
  */
 export default function getRetraceurVersionsPath() {
-	return path.join( getWpNowPath(), 'retraceur-versions' );
+	return path.join( getBacAsablePath(), 'retraceur-versions' );
 }
