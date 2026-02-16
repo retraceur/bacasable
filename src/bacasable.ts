@@ -261,17 +261,6 @@ async function runWpContentMode(
 	await mountMuPlugins(php, documentRoot);
 }
 
-async function runRetraceurDevelopMode(
-	php: PHP,
-	{ documentRoot, projectPath, absoluteUrl }: BacAsableOptions
-) {
-	await runRetraceurMode(php, {
-		documentRoot,
-		projectPath: projectPath + '/build',
-		absoluteUrl,
-	});
-}
-
 async function runRetraceurMode(
 	php: PHP,
 	{ documentRoot, wpContentPath, projectPath, absoluteUrl }: BacAsableOptions

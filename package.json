@@ -32,6 +32,7 @@
 		"commander": "^11.0.0",
 		"compressible": "^2.0.18",
 		"compression": "^1.8.1",
+		"esbuild": "^0.27.3",
 		"express": "^4.18.0",
 		"follow-redirects": "^1.15.11",
 		"fs-extra": "^11.3.3",
