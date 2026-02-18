@@ -115,11 +115,19 @@ export default async function startBacAsable(
 	}
 
 	output?.log(`retraceur: ${retraceurVersionOutput}`);
-	await Promise.all([
-		downloadRetraceur( options.retraceurVersion ),
+
+	// Always download needed plugins.
+	const basePromises = [
 		downloadMuPlugins(),
 		downloadSqliteIntegrationPlugin(),
-	]);
+	];
+
+	// Only add Retraceur download if needed.
+	const bacasablePromises = ( 'retraceur' === options.mode)
+		? basePromises  // Use locally available Retraceur, no need to download.
+		: [ downloadRetraceur( options.retraceurVersion ), ...basePromises ];  // Download everything.
+
+	await Promise.all(bacasablePromises);
 
 	if (options.reset) {
 		fs.removeSync(options.wpContentPath);
