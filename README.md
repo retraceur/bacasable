@@ -1,4 +1,4 @@
-# bacasable 🚀
+# bacÀsable
 
 Instantly start a Retraceur development environment in Node.js with WebAssembly PHP and SQLite.
 
@@ -36,18 +36,18 @@ bacasable start
 ```bash
 # In a plugin directory
 cd my-retraceur-plugin
-npx @retraceur/bacasable start
+bacasable start
 
 # In a theme directory
 cd my-retraceur-theme
-npx @retraceur/bacasable start --php=8.3
+bacasable start --php=8.3
 
 # With a specific Retraceur version
-npx @retraceur/bacasable start --retraceur=2.0.1
+bacasable start --retraceur=2.0.1
 
 # In a complete Retraceur installation
 cd ~/projects/retraceur/coeur
-npx @retraceur/bacasable start
+bacasable start
 ```
 
 ## Available Options
@@ -183,7 +183,7 @@ See all available versions: [Retraceur Releases](https://github.com/retraceur/co
 
 - 📝 No support for old Retraceur versions (< 2.0.0)
 - 🔌 Plugins requiring system dependencies may not work
-- 🌐 No native multisite support (use network plugin)
+- 🌐 No native multisite support
 
 ## Contributing
 
