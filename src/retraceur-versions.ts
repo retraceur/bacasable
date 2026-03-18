@@ -23,7 +23,7 @@ export const RETRACEUR_VERSIONS: Record<string, RetraceurVersion> = {
 	'latest': {
 		tag: '3.1.0',
 		phpVersion: '8.3',
-		releaseDate: 'rolling'
+		releaseDate: '2026-03-14'
 	},
 	'3.1.0': {
 		tag: '3.1.0',
@@ -33,7 +33,7 @@ export const RETRACEUR_VERSIONS: Record<string, RetraceurVersion> = {
 	'3.0.0': {
 		tag: '3.0.0',
 		phpVersion: '8.2',
-		releaseDate: 'rolling'
+		releaseDate: '2026-03-01'
 	},
 	'2.0.1': {
 		tag: '2.0.1',
