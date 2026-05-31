@@ -13,7 +13,6 @@ import {
 	PHP,
 	PHPRequestHandler,
 	proxyFileSystem,
-	rotatePHPRuntime,
 	setPhpIniEntries,
 	UnmountFunction,
 } from '@php-wasm/universal';
@@ -169,15 +168,12 @@ export default async function startBacAsable(
 		await activatePluginOrTheme(php, options);
 	}
 
-	rotatePHPRuntime({
-		php,
-		cwd: requestHandler.documentRoot,
+	php.enableRuntimeRotation({
 		recreateRuntime: async () => {
 			output?.log('Recreating and rotating PHP runtime');
-			const { php, runtimeId } = await getPHPInstance(options);
-			prepareDocumentRoot(php, options);
-			await prepareRetraceur(php, options);
-			return runtimeId;
+			// ✅ Retourner uniquement le runtimeId, pas une nouvelle instance PHP
+			const newRuntimeId = await loadNodeRuntime(options.phpVersion);
+			return newRuntimeId;
 		},
 		maxRequests: 400,
 	});
