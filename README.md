@@ -3,7 +3,7 @@
 Instantly start a Retraceur development environment in Node.js with WebAssembly PHP and SQLite.
 
 [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/gpl-2.0)
-[![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D22.0.0-brightgreen.svg)](https://nodejs.org/)
 
 ## Installation
 
@@ -16,7 +16,6 @@ npm install
 ### Build bacÀsable
 
 ```bash
-# Build
 npm run build
 ```
 
@@ -52,13 +51,13 @@ bacasable start
 
 ## Available Options
 
-|Option                 |Description                     |Default          |
-|-----------------------|--------------------------------|-----------------|
-|`--path=<path>`        |Project path                    |Current directory|
-|`--php=<version>`      |PHP version (8.0, 8.1, 8.2, 8.3)|`8.0`            |
-|`--port=<port>`        |Server port                     |`8881`           |
-|`--retraceur=<version>`|Retraceur version               |`latest`         |
-|`--core`               |Alias for core development      |-                |
+| Option | Description | Default |
+|--------|-------------|---------|
+| `--path=<path>` | Project path | Current directory |
+| `--php=<version>` | PHP version (8.0, 8.1, 8.2, 8.3) | `8.3` |
+| `--port=<port>` | Server port | `8881` |
+| `--retraceur=<version>` | Retraceur version | `latest` |
+| `--mode=<mode>` | Force a mode (plugin\|theme\|wp-content\|retraceur) | Auto-detected |
 
 ### Examples
 
@@ -136,7 +135,7 @@ Learn more: [github.com/retraceur/coeur](https://github.com/retraceur/coeur)
 ### ⚡ Instant Start
 
 - No Docker, Apache, or MySQL required
-- PHP in WebAssembly via Node.js
+- PHP in WebAssembly via Node.js powered by [WP Playground](https://wordpress.github.io/wordpress-playground/)
 - SQLite as database
 - Start in seconds
 
@@ -146,36 +145,74 @@ Learn more: [github.com/retraceur/coeur](https://github.com/retraceur/coeur)
 - Supports plugin, theme, wp-content, full installation
 - Mode-specific optimizations
 
+### 👥 Multi-Worker
+
+- 6 PHP workers running in parallel
+- Better performance than single-instance solutions
+- Handles concurrent requests efficiently
+
 ### 🛠️ Multiple PHP Versions
 
 - Supports PHP 8.0, 8.1, 8.2, 8.3
 - Switch versions easily
 - Test your code compatibility
 
-## Credits
+### 💾 Persistent Storage
 
-bacasable is based on [wp-now](https://github.com/WordPress/playground-tools/tree/trunk/packages/wp-now), developed by the WP Playground team.
+- SQLite database stored locally in your project
+- Data persists between sessions
+- No data loss on restart
 
-Thanks to the WP Playground team for:
+## Architecture
 
-- **@php-wasm/node** and **@php-wasm/universal**: PHP in WebAssembly
-- **WP Playground**: Virtualization infrastructure
-- **wp-now**: Concept and base architecture
+```
+bacasable/
+├── src/
+│   ├── main.ts                  # CLI entry point + startBacasable()
+│   ├── download.ts              # Retraceur download & caching
+│   ├── retraceur-versions.ts    # Version management
+│   ├── constants.ts             # Global constants
+│   ├── output.ts                # Logging utilities
+│   ├── port-finder.ts           # Port management
+│   ├── get-bacasable-path.ts    # Cache path utilities
+│   ├── get-bacasable-tmp-path.ts
+│   ├── get-retraceur-versions-path.ts
+│   ├── github-codespaces.ts     # GitHub Codespaces support
+│   ├── index.ts                 # Public API exports
+│   └── utils/                   # Detection utilities
+│       ├── is-retraceur-directory.ts
+│       ├── is-plugin-directory.ts
+│       ├── is-theme-directory.ts
+│       ├── is-wp-content-directory.ts
+│       ├── get-plugin-file.ts
+│       └── read-file-head.ts
+├── build/                       # Compiled output
+└── esbuild.mjs                  # Build configuration
+```
 
-Without their innovative work, bacasable would not be possible.
+## Technologies
+
+- **Node.js** >= 22: JavaScript runtime
+- **TypeScript**: Typed language
+- **esbuild**: Ultra-fast bundler
+- **@wp-playground/cli**: WP Playground CLI (WebAssembly PHP engine)
+- **SQLite**: Lightweight database (managed by Playground)
 
 ## Supported Retraceur Versions
 
-- `latest` → `trunk` (latest development version)
+- `latest` → Latest stable release
 - `trunk` → Main development branch
-- `2.0.1` → Stable release
+- `3.2.0` → Stable release
+- `3.1.0` → Previous release
+- `3.0.0` → Previous release
+- `2.0.1` → Previous release
 - `2.0.0` → Previous release
 
 See all available versions: [Retraceur Releases](https://github.com/retraceur/coeur/releases)
 
 ## Compatibility
 
-- **Node.js**: >= 18.0.0
+- **Node.js**: >= 22.0.0
 - **npm**: >= 9.0.0
 - **Systems**: macOS, Linux, Windows (WSL recommended)
 
@@ -184,29 +221,42 @@ See all available versions: [Retraceur Releases](https://github.com/retraceur/co
 - 📝 No support for old Retraceur versions (< 2.0.0)
 - 🔌 Plugins requiring system dependencies may not work
 - 🌐 No native multisite support
+- 🔍 No xdebug support (PHP WebAssembly limitation)
+
+## Roadmap
+
+### v1.1.0
+- [ ] Blueprint support (`--blueprint=<file>`)
+- [ ] Auto-update URL in database on port change
+- [ ] Automated tests
+
+### v2.0.0
+- [ ] Proxy support
+- [ ] Hot reload
+- [ ] Web UI for managing instances
 
 ## Contributing
 
-Contributions are welcome! Here’s how to contribute:
+Contributions are welcome! Here's how to contribute:
 
 1. **Fork** the project
-1. **Create a branch**: `git checkout -b feature/my-feature`
-1. **Commit**: `git commit -m 'Add: My feature'`
-1. **Push**: `git push origin feature/my-feature`
-1. **Pull Request**: Open a PR on GitHub
+2. **Create a branch**: `git checkout -b feature/my-feature`
+3. **Commit**: `git commit -m 'Add: My feature'`
+4. **Push**: `git push origin feature/my-feature`
+5. **Pull Request**: Open a PR on GitHub
+
+## Support
+
+- 🐛 [GitHub Issues](https://github.com/retraceur/bacasable/issues)
+- 💬 [Discussions](https://github.com/retraceur/bacasable/discussions)
 
 ## Authors
 
 - **Retraceur Community** - Adaptation for Retraceur
-- **WP Playground Team** - Original wp-now project
+- **WP Playground Team** - WP Playground & original wp-now project
 
 ## Links
 
 - [Retraceur Website](https://retraceur.github.io/)
 - [Retraceur Core](https://github.com/retraceur/coeur)
-- [WordPress Playground](https://wordpress.github.io/wordpress-playground/)
-- [Original wp-now](https://github.com/WordPress/playground-tools/tree/trunk/packages/wp-now)
-
------
-
-**Made with ❤️ by the Retraceur community**
+- [WP Playground](https://wordpress.github.io/wordpress-playground/)

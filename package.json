@@ -1,72 +1,46 @@
 {
 	"name": "@retraceur/bacasable",
-	"version": "0.9.0",
+	"version": "1.0.0-alpha",
 	"description": "A Node.js tool to instantly build your local Retraceur development environment",
-	"keywords": [
-		"retraceur",
-		"cli",
-		"development",
-		"local",
-		"webassembly",
-		"php"
-	],
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/retraceur/bacasable.git"
-	},
-	"bugs": {
-		"url": "https://github.com/retraceur/bacasable/issues"
-	},
+	"type": "module",
 	"bin": {
 		"bacasable": "./build/main.js"
 	},
 	"main": "./build/main.js",
-	"scripts": {
-		"build": "node esbuild.mjs"
+	"exports": {
+		".": "./build/main.js"
 	},
-	"dependencies": {
-		"@php-wasm/node": "latest",
-		"@php-wasm/universal": "latest",
-		"@webcontainer/env": "^1.1.1",
-		"@wp-playground/blueprints": "latest",
-		"commander": "^11.0.0",
-		"compressible": "^2.0.18",
-		"compression": "^1.8.1",
-		"express": "^4.18.0",
-		"follow-redirects": "^1.15.11",
-		"fs-extra": "^11.3.3",
-		"hpagent": "^1.2.0",
-		"unzipper": "^0.12.3"
-	},
-	"devDependencies": {
-		"@types/compression": "^1.8.1",
-		"@types/express": "^4.17.0",
-		"@types/follow-redirects": "^1.14.4",
-		"@types/fs-extra": "^11.0.4",
-		"@types/node": "^20.0.0",
-		"@typescript-eslint/eslint-plugin": "^6.0.0",
-		"@typescript-eslint/parser": "^6.0.0",
-		"eslint": "^8.0.0",
-		"prettier": "^3.0.0",
-		"typescript": "^5.0.0",
-		"esbuild": "^0.27.3"
-	},
-	"engines": {
-		"node": ">=20.0.0"
-	},
-	"homepage": "https://retraceur.github.io/tools/bacasable/",
-	"author": "Communauté Retraceur",
-	"contributors": [
-		{
-			"name": "imath",
-			"url": "https://github.com/imath"
-		}
-	],
-	"license": "GPL-2.0-or-later",
-	"type": "module",
 	"files": [
 		"build",
-		"node_modules",
-		"package.json"
-	]
+		"README.md",
+		"LICENSE"
+	],
+	"scripts": {
+		"build": "node esbuild.mjs",
+		"dev": "node esbuild.mjs --watch",
+		"prepublishOnly": "npm run build"
+	},
+	"dependencies": {
+		"@wp-playground/cli": "^3.1.13",
+		"commander": "^11.0.0",
+		"follow-redirects": "^1.15.0",
+		"fs-extra": "^11.0.0",
+		"tslib": "^2.8.1",
+		"unzipper": "^0.10.0"
+	},
+	"devDependencies": {
+		"@types/follow-redirects": "^1.14.0",
+		"@types/fs-extra": "^11.0.0",
+		"@types/node": "^22.0.0",
+		"@types/unzipper": "^0.10.11",
+		"esbuild": "^0.20.0",
+		"typescript": "^5.0.0"
+	},
+	"engines": {
+		"node": ">=22.0.0"
+	},
+	"allowScripts": {
+		"esbuild@0.20.2": true,
+		"fs-ext-extra-prebuilt@2.2.7": true
+	}
 }
