@@ -21,7 +21,17 @@ export const RETRACEUR_VERSIONS: Record<string, RetraceurVersion> = {
 		releaseDate: 'rolling'
 	},
 	'latest': {
-		tag: '3.2.0',
+		tag: '4.1.0',
+		phpVersion: '8.3',
+		releaseDate: '2026-03-14'
+	},
+	'4.1.0': {
+		tag: '4.1.0',
+		phpVersion: '8.3',
+		releaseDate: '2026-03-14'
+	},
+	'4.0.0': {
+		tag: '4.0.0',
 		phpVersion: '8.3',
 		releaseDate: '2026-03-14'
 	},
