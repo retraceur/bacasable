@@ -202,7 +202,9 @@ bacasable/
 
 - `latest` → Latest stable release
 - `trunk` → Main development branch
-- `3.2.0` → Stable release
+- `4.1.0` → Stable release
+- `4.0.0` → Previous release
+- `3.2.0` → Previous release
 - `3.1.0` → Previous release
 - `3.0.0` → Previous release
 - `2.0.1` → Previous release
