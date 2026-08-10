@@ -2,6 +2,7 @@
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"outDir": "./dist/out-tsc",
+		"ignoreDeprecations": "6.0",
 		"types": ["node"]
 	},
 	"exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],

@@ -4,19 +4,17 @@
 		"rootDir": ".",
 		"sourceMap": true,
 		"declaration": false,
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"esModuleInterop": true,
-		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true,
 		"importHelpers": true,
 		"resolveJsonModule": true,
-		"jsx": "react",
-		"target": "ES2021",
-		"module": "ES2020",
-		"lib": ["ES2022", "dom"],
+		"target": "ES2022",
+		"module": "ES2022",
+		"lib": ["ES2022"],
 		"skipLibCheck": true,
 		"skipDefaultLibCheck": true,
 		"baseUrl": ".",
+		"ignoreDeprecations": "6.0"
 	},
 	"exclude": ["node_modules", "tmp"],
 	"files": [],
@@ -25,5 +23,5 @@
 		{
 			"path": "./tsconfig.lib.json"
 		}
-	],
+	]
 }

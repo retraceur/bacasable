@@ -1,42 +1,37 @@
 /**
- * Download and extract files for bacÀsable.
+ * Download and extract Retraceur for bacÀsable.
  *
  * @module download
- * @since 0.9.0
+ * @since 1.0.0
  */
 
 import followRedirects from 'follow-redirects';
 import fs from 'fs-extra';
-import { HttpProxyAgent, HttpsProxyAgent } from 'hpagent';
 import { IncomingMessage } from 'http';
 import os from 'os';
 import path from 'path';
 import unzipper from 'unzipper';
-import { SQLITE_FILENAME, SQLITE_URL, WP_CLI_URL } from './constants';
-import getSqlitePath, { getSqliteDbCopyPath } from './get-sqlite-path';
-import getRetraceurVersionsPath from './get-retraceur-versions-path';
-import { getRetraceurDownloadUrl, getRetraceurVersion } from './retraceur-versions';
-import getWpCliPath from './get-wp-cli-path';
-import getBacAsablePath from './get-bacasable-path';
-import { output } from './output';
+import getRetraceurVersionsPath from './get-retraceur-versions-path.js';
+import { getRetraceurDownloadUrl, getRetraceurVersion } from './retraceur-versions.js';
+import { output } from './output.js';
 
-function httpsGet(url: string, callback: (response: IncomingMessage) => void) {
+const { https } = followRedirects;
+
+function httpsGet( url: string, callback: ( response: IncomingMessage ) => void ) {
 	const proxy =
 		process.env.https_proxy ||
 		process.env.HTTPS_PROXY ||
 		process.env.http_proxy ||
 		process.env.HTTP_PROXY;
 
-	let agent: HttpsProxyAgent | HttpProxyAgent | undefined;
+	const options: any = {};
 
-	if (proxy) {
-		const urlParts = new URL(url);
-		const Agent =
-			urlParts.protocol === 'https:' ? HttpsProxyAgent : HttpProxyAgent;
-		agent = new Agent({ proxy });
+	if ( proxy ) {
+		// Support proxy basique via l'agent Node.js natif (v2 : hpagent)
+		options.headers = { 'User-Agent': 'bacasable/1.0.0' };
 	}
 
-	https.get(url, { agent }, callback);
+	https.get( url, options, callback );
 }
 
 interface DownloadFileAndUnzipResult {
@@ -44,221 +39,123 @@ interface DownloadFileAndUnzipResult {
 	statusCode: number;
 }
 
-const { https } = followRedirects;
-
-async function downloadFile({
-	url,
-	destinationFilePath,
-	itemName,
-}): Promise<DownloadFileAndUnzipResult> {
-	let statusCode = 0;
-	try {
-		if (fs.existsSync(destinationFilePath)) {
-			return { downloaded: false, statusCode: 0 };
-		}
-		fs.ensureDirSync(path.dirname(destinationFilePath));
-		const response = await new Promise<IncomingMessage>((resolve) =>
-			httpsGet(url, (response) => resolve(response))
-		);
-		statusCode = response.statusCode;
-		if (response.statusCode !== 200) {
-			throw new Error(
-				`Failed to download file (Status code ${response.statusCode}).`
-			);
-		}
-		await new Promise<void>((resolve, reject) => {
-			fs.ensureFileSync(destinationFilePath);
-			const file = fs.createWriteStream(destinationFilePath);
-			response.pipe(file);
-			file.on('finish', () => {
-				file.close();
-				resolve();
-			});
-			file.on('error', (error) => {
-				file.close();
-				reject(error);
-			});
-		});
-		output?.log(`Downloaded ${itemName} to ${destinationFilePath}`);
-		return { downloaded: true, statusCode };
-	} catch (error) {
-		output?.error(`Error downloading file ${itemName}`, error);
-		return { downloaded: false, statusCode };
-	}
-}
-
-export async function downloadWPCLI() {
-	return downloadFile({
-		url: WP_CLI_URL,
-		destinationFilePath: getWpCliPath(),
-		itemName: 'wp-cli',
-	});
-}
-
-async function downloadFileAndUnzip({
+async function downloadFileAndUnzip( {
 	url,
 	destinationFolder,
 	checkFinalPath,
 	itemName,
-}): Promise<DownloadFileAndUnzipResult> {
+}: {
+	url: string;
+	destinationFolder: string;
+	checkFinalPath: string;
+	itemName: string;
+} ): Promise<DownloadFileAndUnzipResult> {
+	// Vérifier si déjà téléchargé
 	if (
-		fs.existsSync(checkFinalPath) &&
-		fs.readdirSync(checkFinalPath).length > 0
+		fs.existsSync( checkFinalPath ) &&
+		fs.readdirSync( checkFinalPath ).length > 0
 	) {
-		output?.log(`${itemName} folder already exists. Skipping download.`);
+		output?.log( `${ itemName } folder already exists. Skipping download.` );
 		return { downloaded: false, statusCode: 0 };
 	}
 
 	let statusCode = 0;
 
 	try {
-		fs.ensureDirSync(path.dirname(destinationFolder));
+		fs.ensureDirSync( path.dirname( destinationFolder ) );
 
-		output?.log(`Downloading ${itemName}...`);
-		const response = await new Promise<IncomingMessage>((resolve) =>
-			httpsGet(url, (response) => resolve(response))
+		output?.log( `Downloading ${ itemName }...` );
+
+		const response = await new Promise<IncomingMessage>( ( resolve ) =>
+			httpsGet( url, ( response ) => resolve( response ) )
 		);
-		statusCode = response.statusCode;
 
-		if (response.statusCode !== 200) {
+		statusCode = response.statusCode ?? 0;
+
+		if ( response.statusCode !== 200 ) {
 			throw new Error(
-				`Failed to download file (Status code ${response.statusCode}).`
+				`Failed to download file (Status code ${ response.statusCode }).`
 			);
 		}
 
 		const entryPromises: Promise<unknown>[] = [];
 
-		/**
-		 * Using Parse because Extract is broken:
-		 * https://github.com/wordpress/wordpress-playground/issues/248
-		 */
 		await response
-			.pipe(unzipper.Parse())
-			.on('entry', (entry) => {
-				const filePath = path.join(destinationFolder, entry.path);
-				/*
-				 * Use the sync version to ensure entry is piped to
-				 * a write stream before moving on to the next entry.
-				 */
-				fs.ensureDirSync(path.dirname(filePath));
+			.pipe( unzipper.Parse() )
+			.on( 'entry', ( entry ) => {
+				const filePath = path.join( destinationFolder, entry.path );
+				fs.ensureDirSync( path.dirname( filePath ) );
 
-				if (entry.type === 'File') {
-					const promise = new Promise((resolve, reject) => {
+				if ( entry.type === 'File' ) {
+					const promise = new Promise( ( resolve, reject ) => {
 						entry
-							.pipe(fs.createWriteStream(filePath))
-							.on('close', resolve)
-							.on('error', reject);
-					});
-					entryPromises.push(promise);
+							.pipe( fs.createWriteStream( filePath ) )
+							.on( 'close', resolve )
+							.on( 'error', reject );
+					} );
+					entryPromises.push( promise );
 				} else {
-					entryPromises.push(entry.autodrain().promise());
+					entryPromises.push( entry.autodrain().promise() );
 				}
-			})
+			} )
 			.promise();
 
-		// Wait until all entries have been extracted before continuing
-		await Promise.all(entryPromises);
+		await Promise.all( entryPromises );
 
 		return { downloaded: true, statusCode };
-	} catch (err) {
-		output?.error(`Error downloading or unzipping ${itemName}:`, err);
+	} catch ( err ) {
+		output?.error( `Error downloading or unzipping ${ itemName }:`, err );
 	}
+
 	return { downloaded: false, statusCode };
 }
 
-export async function downloadRetraceur( version: string = 'latest' ) {
-	const finalFolder = path.join(getRetraceurVersionsPath(), version);
-	const tempFolder = os.tmpdir();
+/**
+ * Télécharger Retraceur depuis GitHub et retourner le chemin d'installation.
+ *
+ * @param version - La version de Retraceur à télécharger (défaut: 'latest')
+ * @returns Le chemin vers l'installation de Retraceur
+ */
+export async function downloadRetraceur( version: string = 'latest' ): Promise<string> {
 	const versionInfo = getRetraceurVersion( version );
 
-	const { downloaded, statusCode } = await downloadFileAndUnzip({
+	// Use real tag instead of alias (ex: "latest")
+	const finalFolder = path.join( getRetraceurVersionsPath(), versionInfo.tag );
+	const tempFolder = os.tmpdir();
+
+	const { downloaded, statusCode } = await downloadFileAndUnzip( {
 		url: getRetraceurDownloadUrl( version ),
 		destinationFolder: tempFolder,
 		checkFinalPath: finalFolder,
-		itemName: `Retraceur ${versionInfo.tag}`,
-	});
+		itemName: `Retraceur ${ versionInfo.tag }`,
+	} );
 
 	if ( downloaded ) {
-		const extractedFolderName = `coeur-${versionInfo.tag}`;
+		const extractedFolderName = `coeur-${ versionInfo.tag }`;
 		const extractedPath = path.join( tempFolder, extractedFolderName );
 
-		if ( ! fs.existsSync(extractedPath )) {
-			output?.log(`Extracted folder not found: ${extractedPath}`);
-
-			// Lister ce qui est dans tempFolder pour debug
-			output?.log( 'Contents of temp folder:', fs.readdirSync(tempFolder) );
-			process.exit(1);
+		if ( ! fs.existsSync( extractedPath ) ) {
+			output?.log( `Extracted folder not found: ${ extractedPath }` );
+			output?.log( 'Contents of temp folder:', fs.readdirSync( tempFolder ) );
+			process.exit( 1 );
 		}
 
-		// Créer le dossier parent
+		// Créer le dossier parent si nécessaire
 		fs.ensureDirSync( path.dirname( finalFolder ) );
 
-		// Déplacer
+		// Déplacer vers le dossier final
 		fs.moveSync( extractedPath, finalFolder, {
 			overwrite: true,
 		} );
 
-		output?.log( `Retraceur ${versionInfo.tag} downloaded and extracted to ${finalFolder}` );
-	} else if (404 === statusCode) {
+		output?.log( `Retraceur ${ versionInfo.tag } downloaded to ${ finalFolder }` );
+	} else if ( 404 === statusCode ) {
 		output?.log(
-			`Retraceur ${versionInfo.tag} not found. Check https://github.com/retraceur/coeur/releases for available versions.`
+			`Retraceur ${ versionInfo.tag } not found. Check https://github.com/retraceur/coeur/releases for available versions.`
 		);
-		process.exit(1);
-	}
-}
-
-export async function downloadSqliteIntegrationPlugin() {
-	// Remove the old SQLite plugin if it exists
-	const oldSqlitePath = path.join(getBacAsablePath(), `${SQLITE_FILENAME}`);
-	if (fs.existsSync(oldSqlitePath)) {
-		fs.rmSync(oldSqlitePath, {
-			recursive: true,
-		});
+		process.exit( 1 );
 	}
 
-	await downloadFileAndUnzip({
-		url: SQLITE_URL,
-		destinationFolder: path.join(getBacAsablePath(), 'mu-plugins'),
-		checkFinalPath: getSqlitePath(),
-		itemName: 'SQLite',
-	});
-
-	// Replace {SQLITE_IMPLEMENTATION_FOLDER_PATH} with the actual path
-	const dbCopyContent = fs.readFileSync(getSqliteDbCopyPath()).toString();
-	if (dbCopyContent.includes("'{SQLITE_IMPLEMENTATION_FOLDER_PATH}'")) {
-		fs.writeFileSync(
-			getSqliteDbCopyPath(),
-			dbCopyContent.replace(
-				"'{SQLITE_IMPLEMENTATION_FOLDER_PATH}'",
-				`realpath( __DIR__ . '/mu-plugins/${SQLITE_FILENAME}' )`
-			)
-		);
-	}
-}
-
-export async function downloadMuPlugins() {
-	fs.ensureDirSync(path.join(getBacAsablePath(), 'mu-plugins'));
-	fs.writeFile(
-		path.join(getBacAsablePath(), 'mu-plugins', '1-pretty-permalinks.php'),
-		`<?php
-	// Support permalinks without "index.php"
-	add_filter( 'got_url_rewrite', '__return_true' );`
-	);
-	fs.writeFile(
-		path.join(
-			getBacAsablePath(),
-			'mu-plugins',
-			'2-deactivate-sqlite-plugin.php'
-		),
-		`<?php
-	add_action(
-		'admin_footer',
-		function() {
-			if ( ! function_exists( 'deactivate_plugins' ) ) {
-				require_once ABSPATH . 'wp-admin/includes/plugin.php';
-			}
-			// The SQLite plugin is automatically activated, but wp-now use it as a a mu-plugin, so we need to deactivate it to prevent notices.
-			deactivate_plugins( 'sqlite-database-integration/load.php' );
-	}, 100 );`
-	);
+	// Return the final folder path (whether downloaded or already existing).
+	return finalFolder;
 }
