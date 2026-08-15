@@ -12,6 +12,10 @@ import getBacAsableTmpPath from './get-bacasable-tmp-path';
 
 /**
  * The full path to the hidden WP Now folder in the user's home directory.
+ *
+ * @since 0.9.0
+ *
+ * @returns The full path to the hidden bacÀsable folder.
  */
 export default function getBacAsablePath() {
 	if (process.env.NODE_ENV !== 'test') {

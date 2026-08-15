@@ -12,7 +12,7 @@ import os from 'os';
 import path from 'path';
 import unzipper from 'unzipper';
 import getRetraceurVersionsPath from './get-retraceur-versions-path.js';
-import { getRetraceurDownloadUrl, getRetraceurVersion } from './retraceur-versions.js';
+import { getRetraceurDownloadUrl, resolveRetraceurVersion } from './retraceur-versions.js';
 import { output } from './output.js';
 
 const { https } = followRedirects;
@@ -27,7 +27,7 @@ function httpsGet( url: string, callback: ( response: IncomingMessage ) => void 
 	const options: any = {};
 
 	if ( proxy ) {
-		// Support proxy basique via l'agent Node.js natif (v2 : hpagent)
+		// If a proxy is set, use it for the request.
 		options.headers = { 'User-Agent': 'bacasable/1.0.0' };
 	}
 
@@ -50,7 +50,7 @@ async function downloadFileAndUnzip( {
 	checkFinalPath: string;
 	itemName: string;
 } ): Promise<DownloadFileAndUnzipResult> {
-	// Vérifier si déjà téléchargé
+	// Check whether the final folder already exists and is not empty. If so, skip the download.
 	if (
 		fs.existsSync( checkFinalPath ) &&
 		fs.readdirSync( checkFinalPath ).length > 0
@@ -111,27 +111,29 @@ async function downloadFileAndUnzip( {
 }
 
 /**
- * Télécharger Retraceur depuis GitHub et retourner le chemin d'installation.
+ * Download and extract Retraceur for bacÀsable.
  *
- * @param version - La version de Retraceur à télécharger (défaut: 'latest')
- * @returns Le chemin vers l'installation de Retraceur
+ * @since 1.0.0
+ *
+ * @param version - The version tag to download (e.g., '1.2.3', 'trunk').
+ * @returns The path to the installed Retraceur.
  */
 export async function downloadRetraceur( version: string = 'latest' ): Promise<string> {
-	const versionInfo = getRetraceurVersion( version );
+	const resolvedTag = await resolveRetraceurVersion( version );
 
 	// Use real tag instead of alias (ex: "latest")
-	const finalFolder = path.join( getRetraceurVersionsPath(), versionInfo.tag );
+    const finalFolder = path.join( getRetraceurVersionsPath(), resolvedTag );
 	const tempFolder = os.tmpdir();
 
 	const { downloaded, statusCode } = await downloadFileAndUnzip( {
-		url: getRetraceurDownloadUrl( version ),
+		url: getRetraceurDownloadUrl( resolvedTag ),
 		destinationFolder: tempFolder,
 		checkFinalPath: finalFolder,
-		itemName: `Retraceur ${ versionInfo.tag }`,
+		itemName: `Retraceur ${ resolvedTag }`,
 	} );
 
 	if ( downloaded ) {
-		const extractedFolderName = `coeur-${ versionInfo.tag }`;
+		const extractedFolderName = `coeur-${ resolvedTag }`;
 		const extractedPath = path.join( tempFolder, extractedFolderName );
 
 		if ( ! fs.existsSync( extractedPath ) ) {
@@ -140,18 +142,18 @@ export async function downloadRetraceur( version: string = 'latest' ): Promise<s
 			process.exit( 1 );
 		}
 
-		// Créer le dossier parent si nécessaire
+		// Ensure the final folder exists before moving the extracted files.
 		fs.ensureDirSync( path.dirname( finalFolder ) );
 
-		// Déplacer vers le dossier final
+		// Move the extracted folder to the final destination, overwriting if it already exists.
 		fs.moveSync( extractedPath, finalFolder, {
 			overwrite: true,
 		} );
 
-		output?.log( `Retraceur ${ versionInfo.tag } downloaded to ${ finalFolder }` );
+		output?.log( `Retraceur ${ resolvedTag } downloaded to ${ finalFolder }` );
 	} else if ( 404 === statusCode ) {
 		output?.log(
-			`Retraceur ${ versionInfo.tag } not found. Check https://github.com/retraceur/coeur/releases for available versions.`
+			`Retraceur ${ resolvedTag } not found. Check https://github.com/retraceur/coeur/releases for available versions.`
 		);
 		process.exit( 1 );
 	}

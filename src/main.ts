@@ -39,7 +39,13 @@ export interface BacAsableServer {
 }
 
 /**
- * Détecter le mode selon le contenu du répertoire
+ * Detect the mode based on the project path and options.
+ *
+ * @since 1.0.0
+ *
+ * @param projectPath - The path to the project.
+ * @param options - The options provided by the user.
+ * @returns The detected mode.
  */
 function inferMode( projectPath: string, options: BacAsableOptions ): Mode {
 	// Mode forcé via option CLI
@@ -67,7 +73,14 @@ function inferMode( projectPath: string, options: BacAsableOptions ): Mode {
 }
 
 /**
- * Construire les mounts selon le mode
+ * Build the mounts for the Docker container based on the mode and paths.
+ *
+ * @since 1.0.0
+ *
+ * @param mode - The detected mode.
+ * @param projectPath - The path to the project.
+ * @param retraceurPath - The path to the Retraceur installation.
+ * @returns An array of mount objects with hostPath and vfsPath.
  */
 function buildMounts(
 	mode: Mode,
@@ -75,7 +88,7 @@ function buildMounts(
 	retraceurPath: string
 ): Array<{ hostPath: string; vfsPath: string }> {
 	const mounts = [
-		// Retraceur toujours monté à la racine
+		// Retraceur is always mounted to root `/wordpress` in the container
 		{
 			hostPath: retraceurPath,
 			vfsPath: '/wordpress',
@@ -114,7 +127,12 @@ function buildMounts(
 }
 
 /**
- * Démarrer bacÀsable
+ * Start bacÀsable
+ *
+ * @since 1.0.0
+ *
+ * @param options - The options for starting bacÀsable.
+ * @returns The server information including URL and port.
  */
 export async function startBacasable( options: BacAsableOptions ): Promise<BacAsableServer> {
 	const projectPath = path.resolve( options.path || process.cwd() );
@@ -127,22 +145,22 @@ export async function startBacasable( options: BacAsableOptions ): Promise<BacAs
 	output?.log( `php: ${ options.php || DEFAULT_PHP_VERSION }` );
 	output?.log( `retraceur: ${ options.retraceur || DEFAULT_RETRACEUR_VERSION }` );
 
-	// Déterminer le chemin Retraceur
+	// Used to determine Retraceur path (local or downloaded).
 	let retraceurPath: string;
 
 	if ( mode === 'retraceur' ) {
-		// Installation locale : pas de téléchargement
+		// Local Retraceur installation is used directly.
 		output?.log( '✅ Using local Retraceur installation' );
 		retraceurPath = projectPath;
 	} else {
-		// Télécharger Retraceur si nécessaire
+		// Download Retraceur if not already downloaded.
 		retraceurPath = await downloadRetraceur( options.retraceur || DEFAULT_RETRACEUR_VERSION );
 	}
 
-	// Construire les mounts
+	// Build the mounts.
 	const mounts = buildMounts( mode, projectPath, retraceurPath );
 
-	// Intercepter stdout pour remplacer les messages WordPress
+	// Intercept stdout to replace "WordPress" with "Retraceur" in the output.
 	const originalWrite = process.stdout.write.bind( process.stdout );
 	( process.stdout.write as any ) = ( chunk: any, ...args: any[] ) => {
 		// Regex pour matcher un code ANSI optionnel
@@ -163,7 +181,7 @@ export async function startBacasable( options: BacAsableOptions ): Promise<BacAs
 		return originalWrite( chunk, ...args );
 	};
 
-	// Lancer runCLI
+	// Launch the CLI with the specified options.
 	const server = await runCLI( {
 		command: 'server',
 		php: ( options.php || DEFAULT_PHP_VERSION ) as any,
@@ -172,10 +190,10 @@ export async function startBacasable( options: BacAsableOptions ): Promise<BacAs
 		port,
 	} );
 
-	// Restaurer stdout
+	// Restore the original stdout.write function to avoid affecting other parts of the application.
 	process.stdout.write = originalWrite;
 
-	// Déterminer l'URL (Codespaces ou local)
+	// Determine the URL (Codespaces or local).
 	const url = isGitHubCodespace
 		? getCodeSpaceURL( port )
 		: server.serverUrl;
