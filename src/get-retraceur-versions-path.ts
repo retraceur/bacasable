@@ -12,6 +12,7 @@ import getBacAsablePath from './get-bacasable-path';
  * The path where Retraceur zip files will be unzipped and stored within the bacÀsable folder.
  *
  * @since 0.9.0
+ *
  * @returns {string} The path to the Retraceur versions directory.
  */
 export default function getRetraceurVersionsPath() {
