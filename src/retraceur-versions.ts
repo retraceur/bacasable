@@ -31,7 +31,7 @@ export async function fetchAvailableVersions(): Promise<string[]> {
 
 		const xml = await response.text();
 
-		// Extraire les tags depuis les balises <id>
+		// Extract version numbers from the <id> tags.
 		// Format : tag:github.com,2008:Repository/882273877/4.2.0
 		const matches = xml.matchAll(
 			/<id>tag:github\.com,2008:Repository\/\d+\/([^<]+)<\/id>/g
@@ -55,7 +55,7 @@ export async function fetchAvailableVersions(): Promise<string[]> {
 export async function resolveLatestVersion(): Promise<string> {
 	const versions = await fetchAvailableVersions();
 
-	// Chercher la première version stable (sans suffixe beta/RC/alpha)
+	// Search for the first stable version (without the beta/RC/alpha suffix).
 	const stable = versions.find(
 		( v ) => ! /-(beta|rc|alpha)/i.test( v )
 	);
@@ -64,7 +64,7 @@ export async function resolveLatestVersion(): Promise<string> {
 		return stable;
 	}
 
-	// Si aucune version stable, prendre la première disponible
+	// If there is no stable version, use the first available one.
 	if ( versions.length > 0 ) {
 		return versions[ 0 ];
 	}

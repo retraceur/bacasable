@@ -48,7 +48,7 @@ export interface BacAsableServer {
  * @returns The detected mode.
  */
 function inferMode( projectPath: string, options: BacAsableOptions ): Mode {
-	// Mode forcé via option CLI
+	// Forced mode via CLI option.
 	if ( options.mode ) {
 		return options.mode;
 	}
@@ -88,7 +88,7 @@ function buildMounts(
 	retraceurPath: string
 ): Array<{ hostPath: string; vfsPath: string }> {
 	const mounts = [
-		// Retraceur is always mounted to root `/wordpress` in the container
+		// Retraceur is always mounted at the root.
 		{
 			hostPath: retraceurPath,
 			vfsPath: '/wordpress',
@@ -160,7 +160,7 @@ export async function startBacasable( options: BacAsableOptions ): Promise<BacAs
 	// Build the mounts.
 	const mounts = buildMounts( mode, projectPath, retraceurPath );
 
-	// Intercept stdout to replace "WordPress" with "Retraceur" in the output.
+	// Intercept `stdout` to replace WP trademark with "Retraceur" in the output.
 	const originalWrite = process.stdout.write.bind( process.stdout );
 	( process.stdout.write as any ) = ( chunk: any, ...args: any[] ) => {
 		// Regex pour matcher un code ANSI optionnel
@@ -190,7 +190,7 @@ export async function startBacasable( options: BacAsableOptions ): Promise<BacAs
 		port,
 	} );
 
-	// Restore the original stdout.write function to avoid affecting other parts of the application.
+	// Restore the original `stdout.write` function to avoid affecting other parts of the application.
 	process.stdout.write = originalWrite;
 
 	// Determine the URL (Codespaces or local).

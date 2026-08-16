@@ -27,7 +27,7 @@ function httpsGet( url: string, callback: ( response: IncomingMessage ) => void 
 	const options: any = {};
 
 	if ( proxy ) {
-		// If a proxy is set, use it for the request.
+		// Basic proxy support via the native Node.js agent (v2: hpagent).
 		options.headers = { 'User-Agent': 'bacasable/1.0.0' };
 	}
 
@@ -142,7 +142,7 @@ export async function downloadRetraceur( version: string = 'latest' ): Promise<s
 			process.exit( 1 );
 		}
 
-		// Ensure the final folder exists before moving the extracted files.
+		// Create the parent folder if necessary.
 		fs.ensureDirSync( path.dirname( finalFolder ) );
 
 		// Move the extracted folder to the final destination, overwriting if it already exists.
