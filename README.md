@@ -42,7 +42,7 @@ cd my-retraceur-theme
 bacasable start --php=8.3
 
 # With a specific Retraceur version
-bacasable start --retraceur=2.0.1
+bacasable start --retraceur=4.2.0
 
 # In a complete Retraceur installation
 cd ~/projects/retraceur/coeur
@@ -65,8 +65,8 @@ bacasable start
 # Custom port
 bacasable start --port=3000
 
-# PHP 8.3 with Retraceur 2.0.1
-bacasable start --php=8.3 --retraceur=2.0.1
+# PHP 8.3 with Retraceur 4.2.0
+bacasable start --php=8.3 --retraceur=4.2.0
 
 # Plugin development with specific path
 bacasable start --path=~/projects/my-plugin
@@ -114,6 +114,16 @@ Complete local Retraceur installation
 cd ~/retraceur/coeur
 bacasable start
 # → Uses local installation (no download)
+```
+
+### β testing Retraceur pre-releases
+
+Contribute to next Retraceur major releases testing betas & release candidates.
+
+```bash
+mkdir ~/test-retraceur
+cd ~/test-retraceur
+bacasable start --retraceur=4.0.0-beta1
 ```
 
 ## What is Retraceur?
@@ -202,15 +212,7 @@ bacasable/
 
 - `latest` → Latest stable release
 - `trunk` → Main development branch
-- `4.1.0` → Stable release
-- `4.0.0` → Previous release
-- `3.2.0` → Previous release
-- `3.1.0` → Previous release
-- `3.0.0` → Previous release
-- `2.0.1` → Previous release
-- `2.0.0` → Previous release
-
-See all available versions: [Retraceur Releases](https://github.com/retraceur/coeur/releases)
+- All releases above version 2.0. See: [Retraceur Releases](https://github.com/retraceur/coeur/releases)
 
 ## Compatibility
 
@@ -224,18 +226,6 @@ See all available versions: [Retraceur Releases](https://github.com/retraceur/co
 - 🔌 Plugins requiring system dependencies may not work
 - 🌐 No native multisite support
 - 🔍 No xdebug support (PHP WebAssembly limitation)
-
-## Roadmap
-
-### v1.1.0
-- [ ] Blueprint support (`--blueprint=<file>`)
-- [ ] Auto-update URL in database on port change
-- [ ] Automated tests
-
-### v2.0.0
-- [ ] Proxy support
-- [ ] Hot reload
-- [ ] Web UI for managing instances
 
 ## Contributing
 
