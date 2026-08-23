@@ -145,7 +145,7 @@ Learn more: [github.com/retraceur/coeur](https://github.com/retraceur/coeur)
 ### ⚡ Instant Start
 
 - No Docker, Apache, or MySQL required
-- PHP in WebAssembly via Node.js powered by [WP Playground](https://wordpress.github.io/wordpress-playground/)
+- PHP in WebAssembly via Node.js powered by [WP Playground](https://https://github.com/wordpress/wordpress-playground)
 - SQLite as database
 - Start in seconds
 
@@ -251,4 +251,4 @@ Contributions are welcome! Here's how to contribute:
 
 - [Retraceur Website](https://retraceur.github.io/)
 - [Retraceur Core](https://github.com/retraceur/coeur)
-- [WP Playground](https://wordpress.github.io/wordpress-playground/)
+- [WP Playground](https://https://github.com/wordpress/wordpress-playground)
