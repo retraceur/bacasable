@@ -181,6 +181,18 @@ export async function startBacasable( options: BacAsableOptions ): Promise<BacAs
 		return originalWrite( chunk, ...args );
 	};
 
+	const retraceurConstants = {
+		WP_DEBUG: true,
+		WP_SCRIPT_DEBUG: true,
+		WP_DEBUG_LOG: false,
+		WP_DEBUG_DISPLAY: true,
+	};
+
+	if ( mode === 'retraceur' || mode === 'wp-content') {
+		retraceurConstants.WP_DEBUG_LOG = true;
+		retraceurConstants.WP_DEBUG_DISPLAY = false;
+	}
+
 	// Launch the CLI with the specified options.
 	const server = await runCLI( {
 		command: 'server',
@@ -188,6 +200,10 @@ export async function startBacasable( options: BacAsableOptions ): Promise<BacAs
 		wordpressInstallMode: 'do-not-attempt-installing',
 		'mount-before-install': mounts,
 		port,
+		blueprint: {
+			constants: retraceurConstants,
+			steps: [],
+		},
 	} );
 
 	// Restore the original `stdout.write` function to avoid affecting other parts of the application.
