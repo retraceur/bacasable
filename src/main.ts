@@ -202,7 +202,36 @@ export async function startBacasable( options: BacAsableOptions ): Promise<BacAs
 		port,
 		blueprint: {
 			constants: retraceurConstants,
-			steps: [],
+			steps: [
+				{
+					step: 'writeFile',
+					path: '/wordpress/wp-content/mu-plugins/bacasable-mail-interceptor.php',
+					data: `<?php
+					/**
+					 * bacÀsable Mail Interceptor
+					 * Intercepts all emails and writes them to wp-content/bacasable-emails.json.
+					 */
+					add_filter( 'wp_mail', function( array $args ): array {
+						$log_file = WP_CONTENT_DIR . '/bacasable-emails.json';
+						$emails   = file_exists( $log_file )
+							? json_decode( file_get_contents( $log_file ), true ) ?? []
+							: [];
+
+						$emails[] = [
+							'date'    => date( 'c' ),
+							'to'      => $args['to'],
+							'subject' => $args['subject'],
+							'message' => $args['message'],
+							'headers' => $args['headers'],
+						];
+
+						file_put_contents( $log_file, json_encode( $emails, JSON_PRETTY_PRINT ) );
+
+						// Make sure the email is not sent to the actual recipient.
+						return array_merge( $args, [ 'to' => '' ] );
+					} );`,
+				},
+			],
 		},
 	} );
 
