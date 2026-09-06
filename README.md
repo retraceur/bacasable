@@ -5,51 +5,37 @@ Instantly start a Retraceur development environment in Node.js with WebAssembly 
 [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/gpl-2.0)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D22.0.0-brightgreen.svg)](https://nodejs.org/)
 
-## Installation
+---
 
-```bash
-git clone https://github.com/retraceur/bacasable.git
-cd bacasable
-npm install
-```
+## Use bacÀsable
 
-### Build bacÀsable
+### Requirements
 
-```bash
-npm run build
-```
+- **Node.js** >= 22.0.0
+- **Systems**: macOS, Linux, Windows (WSL recommended)
 
-### Use Your Local Version
+### Quick Start
 
-```bash
-# In your bacasable clone repository
-npm link
-
-# Now usable anywhere
-cd ~/projects/my-plugin
-bacasable start
-```
-
-## Quick Start
+No installation required! Use directly with npx:
 
 ```bash
 # In a plugin directory
 cd my-retraceur-plugin
-bacasable start
+npx @retraceur/bacasable start
 
 # In a theme directory
 cd my-retraceur-theme
-bacasable start --php=8.3
+npx @retraceur/bacasable start --php=8.3
 
 # With a specific Retraceur version
-bacasable start --retraceur=4.2.0
+npx @retraceur/bacasable start --retraceur=4.2.0
 
 # In a complete Retraceur installation
 cd ~/projects/retraceur/coeur
-bacasable start
+npx @retraceur/bacasable start
 ```
 
-## Available Options
+### Available Options
 
 | Option | Description | Default |
 |--------|-------------|---------|
@@ -59,148 +45,162 @@ bacasable start
 | `--retraceur=<version>` | Retraceur version | `latest` |
 | `--mode=<mode>` | Force a mode (plugin\|theme\|wp-content\|retraceur) | Auto-detected |
 
-### Examples
+### Automatic Mode Detection
 
-```bash
-# Custom port
-bacasable start --port=3000
+bacÀsable automatically detects your project type:
 
-# PHP 8.3 with Retraceur 4.2.0
-bacasable start --php=8.3 --retraceur=4.2.0
-
-# Plugin development with specific path
-bacasable start --path=~/projects/my-plugin
-```
-
-## Automatic Mode Detection
-
-bacasable automatically detects your project type:
-
-### 🔌 Plugin
+#### 🔌 Plugin
 
 Plugin development (detects `Plugin Name:` in PHP header)
 
 ```bash
 cd my-plugin
-bacasable start
+npx @retraceur/bacasable start
 # → Mounts plugin in wp-content/plugins
 ```
 
-### 🎨 Theme
+#### 🎨 Theme
 
 Block theme development (detects `style.css` with `Theme Name:`)
 
 ```bash
 cd my-theme
-bacasable start
+npx @retraceur/bacasable start
 # → Mounts theme in wp-content/themes
 ```
 
-### 📁 wp-content
+#### 📁 wp-content
 
 Development with multiple plugins and themes
 
 ```bash
 cd my-wp-content
-bacasable start
+npx @retraceur/bacasable start
 # → Uses the entire wp-content directory
 ```
 
-### 🏠 retraceur
+#### 🏠 retraceur
 
 Complete local Retraceur installation
 
 ```bash
 cd ~/retraceur/coeur
-bacasable start
+npx @retraceur/bacasable start
 # → Uses local installation (no download)
 ```
 
-### β testing Retraceur pre-releases
+#### β Testing Retraceur pre-releases
 
 Contribute to next Retraceur major releases testing betas & release candidates.
 
 ```bash
-mkdir ~/test-retraceur
-cd ~/test-retraceur
-bacasable start --retraceur=4.0.0-beta1
+mkdir ~/test-retraceur-5-beta
+cd ~/test-retraceur-5-beta
+npx @retraceur/bacasable start --retraceur=5.0.0-beta1
 ```
 
-## What is Retraceur?
+### Email Interception
 
-[Retraceur](https://github.com/retraceur/coeur) is a WP fork focused on personal publishing:
+bacÀsable automatically intercepts all outgoing emails during development.
+Emails are saved to `wp-content/bacasable-emails.json` instead of being sent.
 
-- ✅ No dependency on wordpress.org
-- ✅ Libravatar instead of Gravatar
-- ✅ OpenMojis integrated
-- ✅ Block Editor required
-- ✅ Block themes only
-- ✅ Multisite available via plugin
-- ✅ Comments available via plugin
+### Debug
 
-Learn more: [github.com/retraceur/coeur](https://github.com/retraceur/coeur)
+bacÀsable enables WordPress debug constants by default:
 
-## Features
+| Constant | plugin / theme | wp-content / retraceur |
+|----------|---------------|------------------------|
+| `WP_DEBUG` | `true` | `true` |
+| `WP_SCRIPT_DEBUG` | `true` | `true` |
+| `WP_DEBUG_DISPLAY` | `true` | `false` |
+| `WP_DEBUG_LOG` | `false` | `true` → `wp-content/debug.log` |
 
-### ⚡ Instant Start
+### Supported Retraceur Versions
 
-- No Docker, Apache, or MySQL required
-- PHP in WebAssembly via Node.js powered by [WP Playground](https://github.com/wordpress/wordpress-playground)
-- SQLite as database
-- Start in seconds
+- `latest` → Latest stable release (resolved dynamically from GitHub)
+- `trunk` → Main development branch
+- Any release tag from [Retraceur Releases](https://github.com/retraceur/coeur/releases) (e.g. `4.2.0`, `4.0.0-RC1`, `4.0.0-beta1`)
 
-### 🎯 Multi-Mode
+### Known Limitations
 
-- Automatic project type detection
-- Supports plugin, theme, wp-content, full installation
-- Mode-specific optimizations
+- 📝 No support for old Retraceur versions (< 2.0.0)
+- 🔌 Plugins requiring system dependencies may not work
+- 🌐 No native multisite support
+- 🔍 No xdebug support (PHP WebAssembly limitation)
 
-### 👥 Multi-Worker
+---
 
-- 6 PHP workers running in parallel
-- Better performance than single-instance solutions
-- Handles concurrent requests efficiently
+## Contribute to bacÀsable
 
-### 🛠️ Multiple PHP Versions
+### Requirements
 
-- Supports PHP 8.0, 8.1, 8.2, 8.3
-- Switch versions easily
-- Test your code compatibility
+- **Node.js** >= 22.0.0
+- **npm** >= 9.0.0
 
-### 💾 Persistent Storage
+### Local Setup
 
-- SQLite database stored locally in your project
-- Data persists between sessions
-- No data loss on restart
+```bash
+git clone https://github.com/retraceur/bacasable.git
+cd bacasable
+npm install
+```
 
-## Architecture
+### Build
+
+```bash
+npm run build
+```
+
+### Use Your Local Build
+
+```bash
+# In the bacasable repository
+npm link
+
+# Now usable anywhere
+cd ~/projects/my-plugin
+bacasable start
+```
+
+### Development Workflow
+
+```bash
+# Terminal 1: watch mode
+npm run dev
+
+# Terminal 2: test your changes
+cd ~/projects/my-plugin
+bacasable start
+```
+
+### Architecture
 
 ```
 bacasable/
 ├── src/
-│   ├── main.ts                  # CLI entry point + startBacasable()
-│   ├── download.ts              # Retraceur download & caching
-│   ├── retraceur-versions.ts    # Version management
-│   ├── constants.ts             # Global constants
-│   ├── output.ts                # Logging utilities
-│   ├── port-finder.ts           # Port management
-│   ├── get-bacasable-path.ts    # Cache path utilities
+│   ├── main.ts                       # CLI entry point + startBacasable()
+│   ├── download.ts                   # Retraceur download & caching
+│   ├── retraceur-versions.ts         # Version management (GitHub Atom feed)
+│   ├── constants.ts                  # Global constants
+│   ├── output.ts                     # Logging utilities
+│   ├── port-finder.ts                # Port management
+│   ├── get-bacasable-path.ts         # Cache path utilities
 │   ├── get-bacasable-tmp-path.ts
 │   ├── get-retraceur-versions-path.ts
-│   ├── github-codespaces.ts     # GitHub Codespaces support
-│   ├── index.ts                 # Public API exports
-│   └── utils/                   # Detection utilities
+│   ├── github-codespaces.ts          # GitHub Codespaces support
+│   ├── index.ts                      # Public API exports
+│   └── utils/                        # Mode detection utilities
 │       ├── is-retraceur-directory.ts
 │       ├── is-plugin-directory.ts
 │       ├── is-theme-directory.ts
 │       ├── is-wp-content-directory.ts
 │       ├── get-plugin-file.ts
 │       └── read-file-head.ts
-├── build/                       # Compiled output
-└── esbuild.mjs                  # Build configuration
+├── build/                            # Compiled output
+└── esbuild.mjs                       # Build configuration
 ```
 
-## Technologies
+### Technologies
 
 - **Node.js** >= 22: JavaScript runtime
 - **TypeScript**: Typed language
@@ -208,28 +208,7 @@ bacasable/
 - **@wp-playground/cli**: WP Playground CLI (WebAssembly PHP engine)
 - **SQLite**: Lightweight database (managed by Playground)
 
-## Supported Retraceur Versions
-
-- `latest` → Latest stable release
-- `trunk` → Main development branch
-- All releases above version 2.0. See: [Retraceur Releases](https://github.com/retraceur/coeur/releases)
-
-## Compatibility
-
-- **Node.js**: >= 22.0.0
-- **npm**: >= 9.0.0
-- **Systems**: macOS, Linux, Windows (WSL recommended)
-
-## Known Limitations
-
-- 📝 No support for old Retraceur versions (< 2.0.0)
-- 🔌 Plugins requiring system dependencies may not work
-- 🌐 No native multisite support
-- 🔍 No xdebug support (PHP WebAssembly limitation)
-
-## Contributing
-
-Contributions are welcome! Here's how to contribute:
+### How to Contribute
 
 1. **Fork** the project
 2. **Create a branch**: `git checkout -b feature/my-feature`
@@ -237,18 +216,31 @@ Contributions are welcome! Here's how to contribute:
 4. **Push**: `git push origin feature/my-feature`
 5. **Pull Request**: Open a PR on GitHub
 
-## Support
+### Support
 
 - 🐛 [GitHub Issues](https://github.com/retraceur/bacasable/issues)
 - 💬 [Discussions](https://github.com/retraceur/bacasable/discussions)
 
-## Authors
+---
 
-- **Retraceur Community** - Adaptation for Retraceur
-- **WP Playground Team** - WP Playground & original wp-now project
+## What is Retraceur?
 
-## Links
+[Retraceur](https://github.com/retraceur/coeur) is a WordPress fork focused on personal publishing:
 
-- [Retraceur Website](https://retraceur.github.io/)
-- [Retraceur Core](https://github.com/retraceur/coeur)
-- [WP Playground](https://github.com/wordpress/wordpress-playground)
+- ✅ No dependency on wordpress.org
+- ✅ Libravatar instead of Gravatar
+- ✅ OpenMojis integrated
+- ✅ Block Editor required
+- ✅ Block themes only
+
+Learn more: [github.com/retraceur/coeur](https://github.com/retraceur/coeur)
+
+---
+
+## Credits
+
+Learn more about [bacÀsable credits](./credits.md)
+
+---
+
+**Made with ❤️ by the Retraceur community**

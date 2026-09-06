@@ -1,6 +1,6 @@
 {
 	"name": "@retraceur/bacasable",
-	"version": "1.0.0-alpha",
+	"version": "1.0.0-beta1",
 	"description": "A Node.js tool to instantly build your local Retraceur development environment",
 	"type": "module",
 	"bin": {

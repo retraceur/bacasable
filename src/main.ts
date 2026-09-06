@@ -254,7 +254,7 @@ const program = new Command();
 program
 	.name( 'bacasable' )
 	.description( 'Instantly start a Retraceur development environment' )
-	.version( '1.0.0-alpha' );
+	.version( '1.0.0-beta1' );
 
 program
 	.command( 'start' )
