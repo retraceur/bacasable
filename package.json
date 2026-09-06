@@ -6,14 +6,17 @@
 	"bin": {
 		"bacasable": "./build/main.js"
 	},
-	"main": "./build/main.js",
+	"main": "./build/index.js",
 	"exports": {
-		".": "./build/main.js"
+		".": "./build/index.js"
 	},
 	"files": [
-		"build",
+		"build/main.js",
+		"build/index.js",
 		"README.md",
-		"LICENSE"
+		"LICENSE.md",
+		"CREDITS.md",
+		"CHANGELOG.md"
 	],
 	"scripts": {
 		"build": "node esbuild.mjs",
