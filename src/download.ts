@@ -10,7 +10,7 @@ import fs from 'fs-extra';
 import { IncomingMessage } from 'http';
 import os from 'os';
 import path from 'path';
-import unzipper from 'unzipper';
+import yauzl from 'yauzl';
 import getRetraceurVersionsPath from './get-retraceur-versions-path.js';
 import { getRetraceurDownloadUrl, resolveRetraceurVersion } from './retraceur-versions.js';
 import { output } from './output.js';
@@ -78,29 +78,52 @@ async function downloadFileAndUnzip( {
 			);
 		}
 
-		const entryPromises: Promise<unknown>[] = [];
+		// Create a temporary file to store the downloaded zip.
+		const tmpZip = path.join( os.tmpdir(), `retraceur-${ Date.now() }.zip` );
 
-		await response
-			.pipe( unzipper.Parse() )
-			.on( 'entry', ( entry ) => {
-				const filePath = path.join( destinationFolder, entry.path );
-				fs.ensureDirSync( path.dirname( filePath ) );
+		// Pipe the response to the temporary zip file.
+		await new Promise<void>( ( resolve, reject ) => {
+			const file = fs.createWriteStream( tmpZip );
+			response.pipe( file );
+			file.on( 'finish', resolve );
+			file.on( 'error', reject );
+		} );
 
-				if ( entry.type === 'File' ) {
-					const promise = new Promise( ( resolve, reject ) => {
-						entry
-							.pipe( fs.createWriteStream( filePath ) )
-							.on( 'close', resolve )
-							.on( 'error', reject );
-					} );
-					entryPromises.push( promise );
-				} else {
-					entryPromises.push( entry.autodrain().promise() );
-				}
-			} )
-			.promise();
+		// Unzip the downloaded file to the destination folder.
+		await new Promise<void>( ( resolve, reject ) => {
+			yauzl.open( tmpZip, { lazyEntries: true }, ( err, zipfile ) => {
+				if ( err ) return reject( err );
 
-		await Promise.all( entryPromises );
+				zipfile.readEntry();
+
+				zipfile.on( 'entry', ( entry ) => {
+					const filePath = path.join( destinationFolder, entry.fileName );
+
+					if ( /\/$/.test( entry.fileName ) ) {
+						// Dossier
+						fs.ensureDirSync( filePath );
+						zipfile.readEntry();
+					} else {
+						// Fichier
+						fs.ensureDirSync( path.dirname( filePath ) );
+						zipfile.openReadStream( entry, ( streamErr, readStream ) => {
+							if ( streamErr ) return reject( streamErr );
+							const writeStream = fs.createWriteStream( filePath );
+							readStream.pipe( writeStream );
+							writeStream.on( 'close', () => zipfile.readEntry() );
+							writeStream.on( 'error', reject );
+						} );
+					}
+				} );
+
+				zipfile.on( 'end', () => {
+					fs.removeSync( tmpZip );
+					resolve();
+				} );
+
+				zipfile.on( 'error', reject );
+			} );
+		} );
 
 		return { downloaded: true, statusCode };
 	} catch ( err ) {
