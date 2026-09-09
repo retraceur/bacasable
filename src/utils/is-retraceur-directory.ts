@@ -7,7 +7,7 @@ import path from 'path';
  * @param projectPath The path to the project to check.
  * @returns Is it a Retraceur directory?
  */
-export function isRetraceurDirectory(projectPath: string): Boolean {
+export function isRetraceurDirectory(projectPath: string): boolean {
 	return (
 		fs.existsSync(path.join(projectPath, 'wp-content')) &&
 		fs.existsSync(path.join(projectPath, 'wp-includes')) &&
