@@ -13,7 +13,7 @@ import { downloadRetraceur } from './download.js';
 import { isRetraceurDirectory } from './utils/is-retraceur-directory.js';
 import { isPluginDirectory } from './utils/is-plugin-directory.js';
 import { isThemeDirectory } from './utils/is-theme-directory.js';
-import { isWpContentDirectory } from './utils/is-wp-content-directory.js';
+import { isWpContentDirectory, hasThemesDirectory } from './utils/is-wp-content-directory.js';
 import { output } from './output.js';
 import { portFinder } from './port-finder.js';
 import { DEFAULT_PHP_VERSION, DEFAULT_RETRACEUR_VERSION } from './constants.js';
@@ -115,11 +115,20 @@ function buildMounts(
 				hostPath: projectPath,
 				vfsPath: '/wordpress/wp-content',
 			} );
+
+			// If the themes directory is empty, mount the default Retraceur themes directory.
+			if ( ! hasThemesDirectory( projectPath ) ) {
+				output?.log( '🎨 No themes found, mounting Retraceur themes directory...' );
+				mounts.push( {
+					hostPath: path.join( retraceurPath, 'wp-content', 'themes' ),
+					vfsPath: '/wordpress/wp-content/themes',
+				} );
+			}
 			break;
 
 		case 'retraceur':
 		case 'index':
-			// Déjà monté via retraceurPath
+			// Already mounted via retraceurPath
 			break;
 	}
 
@@ -163,7 +172,7 @@ export async function startBacasable( options: BacAsableOptions ): Promise<BacAs
 	// Intercept `stdout` to replace WP trademark with "Retraceur" in the output.
 	const originalWrite = process.stdout.write.bind( process.stdout );
 	( process.stdout.write as any ) = ( chunk: any, ...args: any[] ) => {
-		// Regex pour matcher un code ANSI optionnel
+		// Regex to match ANSI escape codes for color formatting.
 		const ANSI = '(?:\\u001b\\[[0-9;]*m)*';
 
 		if ( typeof chunk === 'string' ) {
@@ -172,9 +181,9 @@ export async function startBacasable( options: BacAsableOptions ): Promise<BacAs
 				.replace( /WordPress Playground CLI/g, 'bacÀsable CLI' )
 				.replace( /WordPress is running/g, 'Retraceur is running' )
 				.replace( /Ready! WordPress/g, 'Ready! Retraceur' )
-				// Remplacer WP entouré de codes ANSI
+				// Replace "WordPress" with "Retraceur" in the output, preserving ANSI color codes.
 				.replace( new RegExp( `${ ANSI }WordPress${ ANSI }`, 'g' ), 'Retraceur' )
-				// Remplacer /wordpress dans les mounts
+				// Replace "wordpress" in paths with "retraceur" in the output, preserving ANSI color codes.
 				.replace( /→\u001b\[0m \/wordpress\n/g, '→\u001b[0m /retraceur\n' )
 				.replace( /→\u001b\[0m \/wordpress\//g, '→\u001b[0m /retraceur/' );
 		}

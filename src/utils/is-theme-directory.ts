@@ -8,7 +8,7 @@ import { readFileHead } from './read-file-head';
  * @param projectPath The path to the project to check.
  * @returns A boolean value indicating whether the project is a Retraceur theme directory.
  */
-export function isThemeDirectory(projectPath: string): Boolean {
+export function isThemeDirectory(projectPath: string): boolean {
 	const styleCSSExists = fs.existsSync(path.join(projectPath, 'style.css'));
 	if (!styleCSSExists) {
 		return false;
