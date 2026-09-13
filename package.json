@@ -4,7 +4,7 @@
 	"description": "A Node.js tool to instantly build your local Retraceur development environment",
 	"type": "module",
 	"bin": {
-		"bacasable": "./build/main.js"
+		"bacasable": "build/main.js"
 	},
 	"main": "./build/index.js",
 	"exports": {
