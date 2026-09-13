@@ -243,4 +243,4 @@ Learn more about [bacÀsable credits](./credits.md)
 
 ---
 
-**Made with ❤️ by the Retraceur community**
+**Made with ❤️ by Retraceur**
