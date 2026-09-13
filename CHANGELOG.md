@@ -7,7 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.0-beta.1] - 2026-09-06
+## [1.0.0-beta2] - 2026-09-13
+
+### Added
+
+- Auto-mount Retraceur default themes in `wp-content` mode when no local `themes/` directory is found or it is empty, removing the need to manually copy the default theme.
+- Add `hasThemesDirectory()` utility function in `src/utils/is-wp-content-directory.ts`.
+
+### Changed
+
+- Replace `unzipper` with `yauzl` for ZIP extraction, eliminating all npm deprecation warnings (`fstream`, `rimraf`, `glob`, `inflight`).
+- Translate remaining French inline comments to English in `src/main.ts` for consistency.
+
+### Fixed
+
+- Fix npm deprecation warnings displayed when running `npx @retraceur/bacasable` due to `unzipper`'s outdated dependency chain.
+
+## [1.0.0-beta1] - 2026-09-06
 
 ### Added
 
