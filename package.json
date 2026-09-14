@@ -24,7 +24,7 @@
 		"prepublishOnly": "npm run build"
 	},
 	"dependencies": {
-		"@wp-playground/cli": "^3.1.13",
+		"@wp-playground/cli": "^3.1.54",
 		"commander": "^11.0.0",
 		"follow-redirects": "^1.15.0",
 		"fs-extra": "^11.0.0",
