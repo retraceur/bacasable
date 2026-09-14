@@ -7,26 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.0-beta2] - 2026-09-13
+
+## [1.0.0] - 2026-09-15
 
 ### Added
 
 - Auto-mount Retraceur default themes in `wp-content` mode when no local `themes/` directory is found or it is empty, removing the need to manually copy the default theme.
 - Add `hasThemesDirectory()` utility function in `src/utils/is-wp-content-directory.ts`.
-
-### Changed
-
-- Replace `unzipper` with `yauzl` for ZIP extraction, eliminating all npm deprecation warnings (`fstream`, `rimraf`, `glob`, `inflight`).
-- Translate remaining French inline comments to English in `src/main.ts` for consistency.
-
-### Fixed
-
-- Fix npm deprecation warnings displayed when running `npx @retraceur/bacasable` due to `unzipper`'s outdated dependency chain.
-
-## [1.0.0-beta1] - 2026-09-06
-
-### Added
-
 - Migrate from the `wp-now` fork to `@wp-playground/cli` as the core engine, bringing 6 PHP workers, native SQLite management, and better performance.
 - Resolve Retraceur versions dynamically from the [GitHub releases Atom feed](https://github.com/retraceur/coeur/releases.atom), removing the static version mapping.
 - Validate requested Retraceur versions against the feed before attempting any download, providing a clear error message with available versions on invalid input.
@@ -42,12 +29,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Update `@wp-playground/cli` from v3.1.13 to v3.1.54.
+- Replace `unzipper` with `yauzl` for ZIP extraction, eliminating all npm deprecation warnings (`fstream`, `rimraf`, `glob`, `inflight`).
+- Translate remaining French inline comments to English in `src/main.ts` for consistency.
 - Rename `src/retraceur-aire-de-jeux/` to `src/utils/` for clarity.
 - Use the resolved version tag (e.g. `4.2.0`) instead of the alias (e.g. `latest`) as the cache directory name, preventing stale cache issues.
 - Skip Retraceur download when the detected mode is `retraceur` (local installation), using the local path directly.
 - Replace the stdout messages from `@wp-playground/cli` to use Retraceur branding (`bacÀsable CLI`, `Retraceur is running`, `/retraceur` mount paths).
 - Update default PHP version from `8.0` to `8.3`.
 - Update Node.js requirement from `>= 18.0.0` to `>= 22.0.0`.
+
+### Fixed
+
+- Fix npm deprecation warnings displayed when running `npx @retraceur/bacasable` due to `unzipper`'s outdated dependency chain.
 
 ### Removed
 
@@ -67,6 +61,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove `hpagent` dependency (proxy support deferred to v2.0.0).
 - Remove `@php-wasm/node`, `@php-wasm/universal`, `@wp-playground/blueprints`, `@webcontainer/env`, `compression`, `compressible`, `express`, `chokidar` dependencies.
 - Remove `src/assets/` directory.
+
+
+## [1.0.0-beta2] - 2026-09-13
+
+
+## [1.0.0-beta1] - 2026-09-06
+
 
 ## [0.9.0] - 2026-02-14
 
