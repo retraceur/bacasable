@@ -17,6 +17,7 @@ import { isWpContentDirectory, hasThemesDirectory } from './utils/is-wp-content-
 import { output } from './output.js';
 import { portFinder } from './port-finder.js';
 import { DEFAULT_PHP_VERSION, DEFAULT_RETRACEUR_VERSION } from './constants.js';
+import { runPhpcs } from './phpcs.js';
 
 export type Mode =
 	| 'plugin'
@@ -281,6 +282,22 @@ program
 			...options,
 			port: parseInt( options.port ),
 		} );
+	} );
+
+program
+	.command( 'phpcs' )
+	.description( 'Run PHP_CodeSniffer in PHP Wasm (no local PHP required)' )
+	.option( '--path <path>', 'Path to the project', process.cwd() )
+	.option( '--php <version>', 'PHP version (8.0, 8.1, 8.2, 8.3)', '8.3' )
+	.argument( '[args...]', 'Files and options passed to phpcs' )
+	.allowUnknownOption()
+	.action( async ( args: string[], options ) => {
+		try {
+			process.exit( await runPhpcs( { path: options.path, php: options.php, args } ) );
+		} catch ( error ) {
+			console.error( ( error as Error ).message );
+			process.exit( 1 );
+		}
 	} );
 
 program.parse();
