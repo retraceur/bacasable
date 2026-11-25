@@ -18,6 +18,7 @@ import { output } from './output.js';
 import { portFinder } from './port-finder.js';
 import { DEFAULT_PHP_VERSION, DEFAULT_RETRACEUR_VERSION } from './constants.js';
 import { runPhpcs } from './phpcs.js';
+import { runPhpunit } from './phpunit.js';
 
 export type Mode =
 	| 'plugin'
@@ -294,6 +295,22 @@ program
 	.action( async ( args: string[], options ) => {
 		try {
 			process.exit( await runPhpcs( { path: options.path, php: options.php, args } ) );
+		} catch ( error ) {
+			console.error( ( error as Error ).message );
+			process.exit( 1 );
+		}
+	} );
+
+program
+	.command( 'phpunit' )
+	.description( 'Run PHPUnit tests in PHP Wasm (no local PHP required)' )
+	.option( '--path <path>', 'Path to the project (a Retraceur clone)', process.cwd() )
+	.option( '--php <version>', 'PHP version (8.3, 8.4, 8.5)', '8.3' )
+	.argument( '[args...]', 'Test files and options passed to PHPUnit' )
+	.allowUnknownOption()
+	.action( async ( args: string[], options ) => {
+		try {
+			process.exit( await runPhpunit( { path: options.path, php: options.php, args } ) );
 		} catch ( error ) {
 			console.error( ( error as Error ).message );
 			process.exit( 1 );
